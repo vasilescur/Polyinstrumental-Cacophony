@@ -5,13 +5,12 @@ output:
     keep_md: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Import Libraries
 
-```{r load-libs, message=FALSE, warning=FALSE}
+
+```r
 library(tidyverse)
 library(jsonlite)
 library(naniar)
@@ -22,13 +21,15 @@ library(anytime)
 
 First, let's import the message data from GroupMe:
 
-```{r load-data}
+
+```r
 messages <- fromJSON("message.json")
 ```
 
 Then, we select only the important data (and separate out the likes):
 
-```{r clean-data}
+
+```r
 messages <- messages %>%
     select("id", created_at, sender_id, text, favorited_by)
 
@@ -38,7 +39,8 @@ favs <- messages %>%
 
 Now, let's add a new column with our real names, and then filter the data to remove system messages and bots:
 
-```{r user-names-id}
+
+```r
 # Prettify names
 messages <- messages %>%
     mutate(sender = case_when(
@@ -56,7 +58,8 @@ messages <- messages %>%
 
 Let's look at how many messages were sent by each user:
 
-```{r msg-distr}
+
+```r
 messages %>%
     group_by(sender) %>%
     summarize(count = n()) %>%
@@ -66,11 +69,14 @@ messages %>%
              x = "Person", y = "Number of Messages", fill = "Person")
 ```
 
+![](Polyinstrumental_Cacophony_files/figure-html/msg-distr-1.png)<!-- -->
+
 ## Message Length Distribution
 
 Here's the logarithmic distribution of message lengths across all sender:
 
-```{r msg-length-dstr}
+
+```r
 messages <- messages %>%
     mutate(msg_length = str_length(text))
 
@@ -81,9 +87,28 @@ ggplot(messages, aes(x = msg_length, fill = sender)) +
          y = "Log10 of Count", x = "Length", fill = "Sender")
 ```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+```
+## Warning: Removed 2202 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Transformation introduced infinite values in continuous y-axis
+```
+
+```
+## Warning: Removed 27 rows containing missing values (geom_bar).
+```
+
+![](Polyinstrumental_Cacophony_files/figure-html/msg-length-dstr-1.png)<!-- -->
+
 How about the message length by person?
 
-```{r msg-length-person}
+
+```r
 ggplot(messages, aes(x = sender, y = msg_length, fill = sender, color = sender)) + 
     geom_jitter(alpha = 0.03) +
     #geom_violin(color = "#222222", alpha = 0.5) + 
@@ -93,11 +118,22 @@ ggplot(messages, aes(x = sender, y = msg_length, fill = sender, color = sender))
          x = "Sender", fill = "Sender", color = "Sender", y = "Length")
 ```
 
+```
+## Warning: Removed 2202 rows containing non-finite values (stat_boxplot).
+```
+
+```
+## Warning: Removed 2202 rows containing missing values (geom_point).
+```
+
+![](Polyinstrumental_Cacophony_files/figure-html/msg-length-person-1.png)<!-- -->
+
 ## Changes Over Time
 
 Let's examine ways in which messages changed over time. First, we have to clean up our time values:
 
-```{r clean-time}
+
+```r
 messages <- messages %>%
     mutate(created_date = anydate(created_at))
 ```
@@ -106,7 +142,8 @@ Now, let's make some pretty graphs 👍
 
 Here's the number of messages sent each week:
 
-```{r messages-time}
+
+```r
 messages %>% 
     group_by(created_date, sender) %>%
     summarize(num = n()) %>%
@@ -119,9 +156,16 @@ ggplot(aes(x = created_date, y = num, color = sender)) +
          x = "Date", y = "Messages")
 ```
 
+```
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+```
+
+![](Polyinstrumental_Cacophony_files/figure-html/messages-time-1.png)<!-- -->
+
 How about the way message length changed?
 
-```{r msg-length-over-time}
+
+```r
 ggplot(messages, aes(x = created_date, y = msg_length, color = sender)) +
     #geom_jitter(alpha = 0.1) +
     geom_smooth() +
@@ -129,6 +173,16 @@ ggplot(messages, aes(x = created_date, y = msg_length, color = sender)) +
     labs(title = "Average Message Length Over Time",
          x = "Date", y = "Length", color = "Sender")
 ```
+
+```
+## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+```
+
+```
+## Warning: Removed 2202 rows containing non-finite values (stat_smooth).
+```
+
+![](Polyinstrumental_Cacophony_files/figure-html/msg-length-over-time-1.png)<!-- -->
 
 ## Likes
 
