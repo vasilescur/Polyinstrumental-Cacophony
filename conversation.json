@@ -1,0 +1,83 @@
+{
+    "id": "25027606",
+    "group_id": "25027606",
+    "name": "Polyinstrumental Cacophony",
+    "phone_number": "+1 5854334570",
+    "type": "private",
+    "description": "Out nerding each other",
+    "image_url": "https://i.groupme.com/1024x1024.jpeg.0f1b7b82ce784f509c1a6c34b5bb3eea",
+    "creator_user_id": "20866009",
+    "created_at": 1474032548,
+    "updated_at": 1549760979,
+    "office_mode": false,
+    "share_url": null,
+    "share_qr_code_url": null,
+    "members": [
+        {
+            "user_id": "20866009",
+            "nickname": "Beethoven",
+            "image_url": "https://i.groupme.com/750x750.jpeg.9219d84035bb48069ee63f4d8db8dd88",
+            "id": "185407524",
+            "muted": false,
+            "autokicked": false,
+            "roles": [
+                "admin",
+                "owner"
+            ],
+            "name": "Claudia Bow"
+        },
+        {
+            "user_id": "36155045",
+            "nickname": "Breadstick",
+            "image_url": "https://i.groupme.com/1565x1956.jpeg.23c62819f0084daabbc77a9ffa754431",
+            "id": "185407525",
+            "muted": false,
+            "autokicked": false,
+            "roles": [
+                "user"
+            ],
+            "name": "Radu Vasilescu"
+        },
+        {
+            "user_id": "20291844",
+            "nickname": "Copy Pasta With Bacon",
+            "image_url": "https://i.groupme.com/1077x1436.jpeg.926eebf2188747c3856e5365d0a0f557",
+            "id": "185407526",
+            "muted": false,
+            "autokicked": false,
+            "roles": [
+                "user"
+            ],
+            "name": "Emily Kiehl"
+        },
+        {
+            "user_id": "25843278",
+            "nickname": "Disembodied Voice of Satan",
+            "image_url": "https://i.groupme.com/640x480.jpeg.24ea20053ee54bfc9cce53b4bd5e88e0",
+            "id": "191380949",
+            "muted": false,
+            "autokicked": false,
+            "roles": [
+                "user"
+            ],
+            "name": "Shan Symons"
+        }
+    ],
+    "messages": {
+        "count": 43908,
+        "last_message_id": "154976097926052940",
+        "last_message_created_at": 1549760979,
+        "preview": {
+            "nickname": "Beethoven",
+            "text": "our homebois in the loveland winter drumline got first place yall!",
+            "image_url": "https://i.groupme.com/750x750.jpeg.9219d84035bb48069ee63f4d8db8dd88",
+            "attachments": [
+                {
+                    "type": "image",
+                    "url": "https://i.groupme.com/1000x750.jpeg.3ef73c3b4aad4b9cb9b8444ff2868b8f"
+                }
+            ]
+        }
+    },
+    "max_members": 500
+}

@@ -1,0 +1,56 @@
+---
+title: "Polyinstrumental Cacophony"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import Libraries
+
+```{r load-libs, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(jsonlite)
+library(naniar)
+```
+
+## Import and Clean Data
+
+First, let's import the message data from GroupMe:
+
+```{r load-data}
+messages <- read_json("message.json", simplifyVector = TRUE)
+```
+
+Then, we select only the important data:
+
+```{r clean-data}
+messages <- messages %>%
+    select(id, created_at, sender_id, text, favorited_by)
+```
+
+Now, let's add a new column with our real names, and then filter the data to remove system messages and bots (as well as
+clean up the `favorited_by` lists:
+
+```{r user-names-id}
+# Prettify names
+messages <- messages %>%
+    mutate(sender = case_when(
+        sender_id == "20866009" ~ "Claudia",
+        sender_id == "36155045" ~ "Radu",
+        sender_id == "20291844" ~ "Emily",
+        sender_id == "25843278" ~ "Shannon",
+        TRUE ~ "Other"
+    )) %>%
+    select(created_at, sender_id, sender, text, favorited_by) %>%
+    filter(sender != "Other")
+    
+messages
+    
+# Clean up favorited_by
+messages <- messages %>% 
+    mutate(num_likes = length(favorited_by))
+```
+
+## Messages by User
