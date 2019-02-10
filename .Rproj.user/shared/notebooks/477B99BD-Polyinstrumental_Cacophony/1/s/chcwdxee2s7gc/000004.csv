@@ -1,0 +1,5 @@
+"0","messages <- messages %>%
+    mutate(created_date = anydate(created_at)) %>%
+    mutate(month = as.numeric(format(created_date, ""%m/%Y"")))
+"
+"2","NAs introduced by coercion"

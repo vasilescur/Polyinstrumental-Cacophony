@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(jsonlite)
 library(naniar)
+library(anytime)
 ```
 
 ## Import and Clean Data
@@ -20,18 +21,20 @@ library(naniar)
 First, let's import the message data from GroupMe:
 
 ```{r load-data}
-messages <- fromJSON("message.json", simplifyVector = TRUE)
+messages <- fromJSON("message.json")
 ```
 
-Then, we select only the important data:
+Then, we select only the important data (and separate out the likes):
 
 ```{r clean-data}
 messages <- messages %>%
-    select(id, created_at, sender_id, text, favorited_by)
+    select("id", created_at, sender_id, text, favorited_by)
+
+favs <- messages %>%
+    select("id", favorited_by)
 ```
 
-Now, let's add a new column with our real names, and then filter the data to remove system messages and bots (as well as
-clean up the `favorited_by` lists:
+Now, let's add a new column with our real names, and then filter the data to remove system messages and bots:
 
 ```{r user-names-id}
 # Prettify names
@@ -45,12 +48,107 @@ messages <- messages %>%
     )) %>%
     select(created_at, sender_id, sender, text, favorited_by) %>%
     filter(sender != "Other")
-    
-messages
-    
-# Clean up favorited_by
-messages <- messages %>% 
-    mutate(num_likes = length(favorited_by))
 ```
 
 ## Messages by User
+
+Let's look at how many messages were sent by each user:
+
+```{r msg-distr}
+messages %>%
+    group_by(sender) %>%
+    summarize(count = n()) %>%
+    ggplot(aes(x = reorder(sender, -count), y = count, fill = sender)) +
+        geom_bar(stat = "identity") +
+        labs(title = "Number of Messages Sent by Each Person",
+             x = "Person", y = "Number of Messages", fill = "Person")
+```
+
+## Message Length Distribution
+
+Here's the logarithmic distribution of message lengths across all sender:
+
+```{r msg-length-dstr}
+messages <- messages %>%
+    mutate(msg_length = str_length(text))
+
+ggplot(messages, aes(x = msg_length, fill = sender)) +
+    geom_histogram() +
+    scale_y_log10() +
+    labs(title = "Message Length Distribution (Log Scale)",
+         y = "Log10 of Count", x = "Length", fill = "Sender")
+```
+
+How about the message length by person?
+
+```{r msg-length-person}
+ggplot(messages, aes(x = sender, y = msg_length, fill = sender, color = sender)) + 
+    geom_jitter(alpha = 0.03) +
+    #geom_violin(color = "#222222", alpha = 0.5) + 
+    geom_boxplot(color = "#222222", alpha = 0.5) +
+    scale_y_log10() +
+    labs(title = "Message Length by Sender (Log Scale)",
+         x = "Sender", fill = "Sender", color = "Sender", y = "Length")
+```
+
+## Changes Over Time
+
+Let's examine ways in which messages changed over time. First, we have to clean up our time values:
+
+```{r clean-time}
+messages <- messages %>%
+    mutate(created_date = anydate(created_at))
+```
+
+Now, let's make some pretty graphs 👍
+
+Here's the number of messages sent each week:
+
+```{r messages-time}
+messages %>% 
+    group_by(created_date, sender) %>%
+    summarize(num = n()) %>%
+
+ggplot(aes(x = created_date, y = num, color = sender)) +
+    #geom_jitter(alpha = 0.1) +
+    geom_smooth() +
+    #scale_y_log10() +
+    labs(title = "Average Number of Messages Sent Each Day",
+         x = "Date", y = "Messages")
+```
+
+How about the way message length changed?
+
+```{r msg-length-over-time}
+ggplot(messages, aes(x = created_date, y = msg_length, color = sender)) +
+    #geom_jitter(alpha = 0.1) +
+    geom_smooth() +
+    #scale_y_log10() +
+    labs(title = "Average Message Length Over Time",
+         x = "Date", y = "Length", color = "Sender")
+```
+
+## Likes
+
+Let's first clean up the likes data:
+
+```
+# Too many hours were wasted here. Screw this.
+
+
+#fav_list <- messages[["favorited_by"]]
+
+#fav_list[unlist(lapply(fav_list, function(x) identical(x, character(0))))] <- "none"
+
+
+
+#fav_list <- lapply(fav_list, function(x) if_else(x == "none", 0, 0 + length(x)))
+
+#for (i in 1:length(fav_list)-1) {
+#    fav_list[i] = if_else(fav_list[i] == "none", 0, 0 + length(fav_list[i]))
+#}
+
+
+#messages %>%
+#    group_by(unlist(favorited_by))
+```

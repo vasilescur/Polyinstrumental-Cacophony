@@ -1,1 +1,0 @@
-"0","messages <- read_json(""message.json"", simplifyVector = TRUE)"
